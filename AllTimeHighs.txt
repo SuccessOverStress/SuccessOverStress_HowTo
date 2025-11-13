@@ -1,0 +1,51 @@
+//Author: Erik A Garland-Success Over Stress- http://www.youtube.com/@SuccessOverStress -Email: SuccessFromStress@gmail.com. Discord: https://discord.gg/3hdkfE8fyU  
+ //Date:  11/12/25 
+ //Design: Create an EasyLanguage program that will plot and identify new all time highs for a given chart
+
+var: double highesthigh(0),tsdata.marketdata.PriceSeriesProvider psp(NULL);
+
+method void xfindhighesthigh()
+	var: int idxa; 
+	begin 
+		if psp.state=tsdata.common.datastate.loaded then 
+			for idxa=0 to psp.count-1
+				begin
+					highesthigh=maxlist(highesthigh, psp.high[idxa]);  
+				end; 			
+		psp.closeprovider(); //PSP no longer needed
+	end; 
+	
+method void xCheck_for_new_high()
+	begin 
+		highesthigh=maxlist ( highesthigh, high	); 	
+		if highesthigh<>highesthigh[1] then plotpaintbar(low, high, "All Time High", green); 	
+	end; 		
+	
+method void xSetup_PSP() 
+	begin 
+		psp = new tsdata.marketdata.PriceSeriesProvider;//instantiate the PSP
+		
+		//---------------------------
+		//psp
+		//---------------------------
+		psp.Symbol = symbol;
+		psp.Interval.ChartType = tsdata.marketdata.DataChartType.Bars;
+		psp.Interval.IntervalType = tsdata.marketdata.DataIntervalType.Monthly;
+		psp.Interval.IntervalSpan = 1;
+		psp.Interval.Name = "(Unknown name)";
+		psp.Range.Type = tsdata.marketdata.DataRangeType.Years;
+		psp.Range.Years = 100;
+		psp.Range.Name = "(Unknown name)";
+		psp.IncludeVolumeInfo = false;
+		psp.IncludeTicksInfo = false;
+		psp.UseNaturalHours = false;
+		psp.Realtime = true;
+		psp.TimeZone = tsdata.common.TimeZone.local;
+		psp.Name = "psp";
+		psp.Load = true;
+		
+		xfindhighesthigh(); //Method called to check for the highest of the historical highs 
+	end; 
+
+once xSetup_PSP(); 	
+xCheck_for_new_high();//check each bar for a new high and plotpaintbar if found; 	
