@@ -1,0 +1,95 @@
+//Author: Erik A Garland-Success Over Stress- http://www.youtube.com/@SuccessOverStress -Email: SuccessFromStress@gmail.com. Discord: https://discord.gg/3hdkfE8fyU   
+//Date:  11/14/25	
+//Design: Create a Program that can Identify the closest level of deman and the one just below..Demands are removed when mitigated
+
+using elsystem.collections; using elsystem.drawing; using elsystem.drawingobjects; 
+array: alows[20](0);//{0} , 1, 2, 20..total of 21.......blanks....0 0 00 0 00 0 ,1,5, 10, 35
+var:  vector vlows(null); 
+
+method void xclear_array()
+	var: int idxa; 
+		begin
+			for idxa=1 to 20
+				begin 
+					alows[idxa]=0; 
+				end; 			
+		end; 
+		
+method void xcleanup_vect()
+	var: int idxa; 
+		begin 
+			for idxa=vlows.count-1 downto 0
+					begin
+						if l< vlows[idxa] astype double then vlows.erase(idxa); 
+					end; 
+		end; 
+
+method void xloadvect(double zlow)
+	var: int idxa; 
+		begin
+			vlows.insert(01,zlow) ;			
+			if vlows.count>21 then vlows.pop_back();//count control 			
+		end; 
+	
+method void xcopy_vector()	
+	var: int idxa; 
+		begin	
+			if lastx then condition1=elcprintcollection("vect", vlows, 0, 1);
+			for idxa=1 to vlows.count-1
+				begin 
+					alows[idxa]=vlows[idxa] astype double; 			
+				end; 
+			value99=sortarray(	alows, 20, -1); 				
+		end; 	
+
+method void xprint_array() 
+	var: int idxa; 
+		begin
+			for idxa=0 to 20 
+				begin 
+					print ( alows[idxa]);			
+				end; 
+		end; 
+
+method string xFind_Demand_from_array	()	
+	var: int idxa; 
+		begin 				
+			for idxa=20 downto 0 
+				begin
+					if alows[idxa]<l
+						then return numtostr(alows[idxa],2)+","+numtostr(alows[idxa-1],2)  ; 
+				end; 
+		end; 
+	
+method void xplot_hline(string zprice) {first line , 2ndline}
+	var: horizontalline hline, tsdata.common.tokenlist tlist, int idxa; 
+	begin 
+		tlist=new tsdata.common.tokenlist; 
+		tlist.clear(); 
+		tlist.add(zprice); 
+		for idxa= 0 to 1
+			begin 
+				hline=horizontalline.create( strtonum(tlist[idxa])); 
+					switch idxa
+						begin 
+							case 0: hline.color=color.blue; 
+							case 1: hline.color=color.green; 
+						end; 
+				hline.lock=true; 
+				drawingobjects.add(hline); 
+			end; 			
+	end; 	
+	
+
+once
+	begin
+		clearprintlog(); 
+		vlows=new vector; 
+		vlows.push_back(0.00);
+	end ;
+
+if $eriksmarket  then begin  xclear_array();xcopy_vector();	end;
+if $sl(5)>0 then xloadvect($sl(5)); 
+xcleanup_vect(); 
+
+if lastx then xplot_hline (xFind_Demand_from_array()); 
